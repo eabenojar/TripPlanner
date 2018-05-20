@@ -1,0 +1,31 @@
+.mainPage-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgba(87,199,255,0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.tripTitle {
+  color: #FFF;
+  font-size: 45px;
+  font-weight: 600;
+  font-family: sans-serif;
+  margin: 20px;
+}
+.inputBar {
+  height: 40px;
+  width: 350px;
+  border: 1px solid transparent;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+.strongTitle {
+  color: #70FF70;
+}

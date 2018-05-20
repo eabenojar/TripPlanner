@@ -1,0 +1,9 @@
+.App {
+  text-align: center;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  background-image:url('https://images.unsplash.com/photo-1443996104801-80c82e789b18?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=869f41c281e99d8c05359df63a51c77b&auto=format&fit=crop&w=1053&q=80');
+  background-repeat:no-repeat;
+  background-size:cover;
+}
