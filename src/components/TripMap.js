@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Map, Marker} from 'google-maps-react';
+// import {Map, Marker} from 'google-maps-react';
 import '../styles/TripMap.css';
 
 class TripMap extends Component {
@@ -19,13 +19,19 @@ class TripMap extends Component {
 
   }
   componentWillMount(){
-    console.log('WILL MOUNT', this.props, this.state);
+
     const tripArray = [...this.props.location.tripArray]
     this.setState({
       tripArray
     })
   }
+  submitForm(e){
+    console.log("PRESS ENTER")
+    e.preventDefault();
+
+  }
   componentDidMount(){
+    console.log('WILL MOUNT', this.state.tripArray);
     if(this.props.location.place.geometry){
         this.onPlaceChanged()
     }
@@ -36,6 +42,8 @@ class TripMap extends Component {
     const {google} = this.props;
     const refMap = this.refMap;
     var waypointsArr = [];
+    var originArr = [];
+    var destinationArr = [];
     var latlng = new google.maps.LatLng(42.39, -72.52);
     var countries = {
     'us': {
@@ -43,43 +51,76 @@ class TripMap extends Component {
       zoom: 14
     },
     };
+
+
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer;
-    this.state.map = new google.maps.Map(refMap, {
-    zoom: countries['us'].zoom,
-    center: countries['us'].center
-    })
-    if(!place){
-      this.state.map.panTo(this.state.tripArray[0].location);
-    }
-    if(this.state.tripArray.length > 1) {
-      this.state.tripArray.map(function(waypoints, index){
-        if(index > 0 && index < this.state.tripArray.length-1){
-          console.log("THIS WORKS IN WAY POINTS", waypoints)
-          const waypointsLocations = {
-            location: waypoints.city
-          }
+    this.setState({
+      map: new google.maps.Map(refMap, {
+      zoom: countries['us'].zoom,
+      center: countries['us'].center
+      })
+    }, function(){
+      if(this.state.map){
+        this.state.map.panTo(this.state.tripArray[0].location);
+      }
+      if(this.state.tripArray.length > 1) {
 
-          waypointsArr.push({...waypointsLocations})
-          console.log("WAY ARRAYdadwadwaw", waypointsArr)
-        }
-      }.bind(this))
-      console.log('FIRE AWAY')
-      directionsDisplay.setMap(this.state.map);
-        // this.state.map.setZoom;
-        directionsService.route({
-          origin: this.props.location.place.geometry.location,
-          destination: this.state.tripArray[this.state.tripArray.length-1].city,
-          waypoints: [...waypointsArr],
-          travelMode: 'DRIVING'
-        }, function(response, status) {
-          if (status === 'OK') {
-            directionsDisplay.setDirections(response);
-          } else {
-            window.alert('Directions request failed due to ' + status);
+        //ADD MARKERS FOR DISTANCE ON MAP
+        this.state.tripArray.map(function(waypoints, index){
+          if(index > 0 && index < this.state.tripArray.length-1){
+            const waypointsLocations = {
+              location: waypoints.city
+            }
+
+            waypointsArr.push({...waypointsLocations})
+            console.log("WAY ARRAYdadwadwaw", waypointsArr)
           }
-        });
-    }
+          var origin1 = {lat: 55.93, lng: -3.118};
+          var origin2 = 'Greenwich, England';
+          var destinationA = 'Stockholm, Sweden';
+          var destinationB = {lat: 50.087, lng: 14.421};
+          originArr.push(waypoints.location);
+          destinationArr.push(waypoints.city);
+
+        }.bind(this))
+        directionsDisplay.setMap(this.state.map);
+          // this.state.map.setZoom;
+          directionsService.route({
+            origin: this.props.location.place.geometry.location,
+            destination: this.state.tripArray[this.state.tripArray.length-1].city,
+            waypoints: [...waypointsArr],
+            travelMode: 'DRIVING'
+          }, function(response, status) {
+            if (status === 'OK') {
+              directionsDisplay.setDirections(response);
+            } else {
+              window.alert('Directions request failed due to ' + status);
+            }
+          });
+          var service = new google.maps.DistanceMatrixService;
+                   service.getDistanceMatrix({
+                     origins: originArr,
+                     destinations: destinationArr,
+                     travelMode: 'DRIVING',
+                     unitSystem: google.maps.UnitSystem.METRIC,
+                     avoidHighways: false,
+                     avoidTolls: false
+                   }, function(response, status) {
+                     if (status !== 'OK') {
+                       alert('Error was: ' + status);
+                     } else {
+                       console.log('RESPONSEEEEEEE', response)
+                     };
+                   });
+
+      }
+    })
+    // this.state.map = new google.maps.Map(refMap, {
+    // zoom: countries['us'].zoom,
+    // center: countries['us'].center
+    // })
+
 
   }
   addTrip(){
@@ -96,8 +137,6 @@ class TripMap extends Component {
     //   }
     //
     // })
-
-
   }
   handleChange(e){
     var value = e.target.value;
@@ -106,6 +145,7 @@ class TripMap extends Component {
       newCity: value
     })
     this.newInputTrip(value)
+    e.preventDefault();
 
   }
   newInputTrip(value){
@@ -171,7 +211,7 @@ class TripMap extends Component {
             {this.state.tripArray ? (
               this.state.tripArray.map((trip) => {
                 return (
-                  <div className="tripDetails" ref={ref => this.tripDetails = ref}>
+                  <div key={trip.id} className="tripDetails" ref={ref => this.tripDetails = ref}>
                     <div className="tripTopContainer">
                       <div className="tripTopLeftContainer">
                           <h2 className="tripDetailsTitle">{trip.city}</h2>
@@ -195,7 +235,9 @@ class TripMap extends Component {
 
             {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
               <div className="newInputTrip">
+              <form onSubmit={this.submitForm.bind(this)}>
                 <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
+                </form>
               </div>
             }
           </div>

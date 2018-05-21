@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import MainPage from './components/MainPage';
 import MapPageContainer from './components/MapPageContainer';
-import { BrowserRouter as Router, Route, Link, Redirect} from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 
 
 class App extends Component {

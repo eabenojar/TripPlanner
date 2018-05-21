@@ -6,9 +6,6 @@ var api_key = process.env.API_KEY;
 
 
 class MapPageContainer extends Component {
-  constructor(props){
-    super(props)
-  }
   render() {
 
     return(
