@@ -50,7 +50,7 @@ class TripMap extends Component {
     center: countries['us'].center
     })
     if(!place){
-      this.state.map.panTo(this.props.location.tripArray[0].location);
+      this.state.map.panTo(this.state.tripArray[0].location);
     }
     if(this.state.tripArray.length > 1) {
       this.state.tripArray.map(function(waypoints, index){
@@ -136,13 +136,23 @@ class TripMap extends Component {
             tripArray.push({...city})
             this.setState({
               tripArray,
-              newCity: ''
+              newCity: '',
+              openSearch: false
             })
             console.log("THIS NEW PUSH", this.state.tripArray)
             this.onPlaceChanged(place);
           }
     }.bind(this))
 
+
+  }
+  deleteTrip(trip){
+    console.log('HELFMALFNKKLAFNAEF', trip)
+    const tripList = [...this.state.tripArray];
+    const deleteTrip = tripList.filter((removeTrip) => removeTrip.id !== trip.id)
+    this.setState({
+      tripArray: deleteTrip
+    }, this.onPlaceChanged.bind(this))
 
   }
 
@@ -158,10 +168,31 @@ class TripMap extends Component {
             <div className="MapLeftContainerHeader">
               <h2 className="MapLeftContainerTitle">Your Trips</h2>
             </div>
-            <div className="tripDetails" ref={ref => this.tripDetails = ref}>
-              <h2 className="tripDetailsTitle">{this.props.location.tripArray[0].city}</h2>
-              <img src={this.props.location.tripArray[0].image} alt="boohoo" className="img-responsive"/>
-            </div>
+            {this.state.tripArray ? (
+              this.state.tripArray.map((trip) => {
+                return (
+                  <div className="tripDetails" ref={ref => this.tripDetails = ref}>
+                    <div className="tripTopContainer">
+                      <div className="tripTopLeftContainer">
+                          <h2 className="tripDetailsTitle">{trip.city}</h2>
+                      </div>
+                      <div className="tripTopRightContainer">
+                        <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
+                            <i id="eraserIcon" className="fa fa-pencil" ></i>
+                        </button>
+                        <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
+                            <i id="eraserIcon" className="fa fa-trash" ></i>
+                        </button>
+
+                      </div>
+                    </div>
+
+                    <img src={trip.image} alt="boohoo" className="img-responsive"/>
+                  </div>
+                )
+              })
+            ): <div>Loading</div>}
+
             {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
               <div className="newInputTrip">
                 <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
