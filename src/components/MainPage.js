@@ -13,7 +13,9 @@ class MainPage extends Component {
     this.state = {
       autocomplete: '',
       value: '',
-      place: ''
+      place: '',
+      tripArray: [],
+      city: ''
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,7 +42,25 @@ class MainPage extends Component {
     this.state.autocomplete.addListener("place_changed", function(){
         var place = finalAutoComplete.getPlace();
           // console.log('HANDLE STATE OF AUTO', place)
-        this.handleEvent(place)
+        if(place){
+
+          const city = {
+            city: place.formatted_address,
+            image: place.photos[0].getUrl({'maxWidth': 300, 'maxHeight': 200}),
+            id: place.id,
+            location: place.geometry.location
+          }
+          const tripArray = [...this.state.tripArray];
+
+          tripArray.push({...city})
+          // console.log("TRIP ARRAYYYY", tripArray, place)
+
+          this.setState({
+            tripArray: tripArray
+          })
+          this.handleEvent(place,tripArray)
+        }
+
     }.bind(this))
    }
   handleChange(e){
@@ -50,11 +70,12 @@ class MainPage extends Component {
     })
     this.handleSubmit(value);
   }
-  handleEvent(place){
-    console.log('THIS HANDLE STATE', place,  this.state.autocomplete )
+  handleEvent(place, tripArray){
+    console.log('THIS HANDLE STATE',tripArray)
     this.props.history.push({
       pathname: "/map",
-      place: place
+      place: place,
+      tripArray
     });
 
   }

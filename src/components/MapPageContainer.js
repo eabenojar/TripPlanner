@@ -10,21 +10,14 @@ class MapPageContainer extends Component {
     super(props)
   }
   render() {
-      // console.log('THIS PROPS MAP CONTAINER', this.props)
+
     return(
-        <TripMap google={this.props.google} props={this.props}/>
+        <TripMap google={this.props.google} {...this.props}/>
     )
   }
 }
 
-// const MyMapComponent = withScriptjs(withGoogleMap((props) =>
-//   <GoogleMap
-//     defaultZoom={8}
-//     defaultCenter={{ lat: -34.397, lng: 150.644 }}
-//   >
-//     {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} />}
-//   </GoogleMap>
-// ))
+
 
 //export the container WITHIN the GoogleApiWrapper
  export default GoogleApiWrapper({
