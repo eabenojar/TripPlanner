@@ -115,7 +115,8 @@ class TripMap extends Component {
                        // console.log(finalTripObj, 'FINAL TRIP BOOOOMMMM!')
                        // finalTripArr.push(finalTripObj);
                        this.setState({
-                         distanceArray: distanceRows
+                         distanceArray: distanceRows,
+                         openSearch: false
                        })
                      };
                    }.bind(this));
@@ -168,8 +169,7 @@ class TripMap extends Component {
             tripArray.push({...city})
             this.setState({
               tripArray,
-              newCity: '',
-              openSearch: false
+              newCity: ''
             })
             // console.log("THIS NEW PUSH", this.state.tripArray)
             this.onPlaceChanged(place);
@@ -223,9 +223,23 @@ class TripMap extends Component {
             </div>
             <div className="MapLeftSubContainer">
               <div className="MapLeftCities">
+                {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
+                  <div className="newInputTrip">
+                  <form onSubmit={this.submitForm.bind(this)}>
+                    <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
+                    </form>
+                  </div>
+
+                  }
                 {this.state.tripArray ? (
-                  this.state.tripArray.map((trip) => {
+                  <div>
+
+                  {this.state.tripArray.map((trip,index) => {
                     return (
+                      <div className="TripRow">
+                      <div className="TripCount">
+                        <h4 className="TripCountCircle">{index+1}</h4>
+                      </div>
                       <div key={trip.id} className="tripDetails" ref={ref => this.tripDetails = ref}>
                         <div className="tripTopContainer">
                           <div className="tripTopLeftContainer">
@@ -238,24 +252,20 @@ class TripMap extends Component {
                             <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
                                 <i id="eraserIcon" className="fa fa-trash" ></i>
                             </button>
-
                           </div>
                         </div>
 
                         <img src={trip.image} alt="boohoo" className="img-responsive"/>
                       </div>
+                      </div>
                     )
                   })
+                  }
+
+                  </div>
                 ): <div>Loading</div>}
 
-                {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
-                  <div className="newInputTrip">
-                  <form onSubmit={this.submitForm.bind(this)}>
-                    <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
-                    </form>
-                  </div>
 
-                  }
               </div>
               <div className="MapLeftDistances">
               { this.state.distanceArray.length > 1 ? (
