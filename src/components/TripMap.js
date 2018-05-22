@@ -198,7 +198,28 @@ class TripMap extends Component {
         <div className="MainMap">
           <div className="MapLeftContainer">
             <div className="MapLeftContainerHeader">
-              <h2 className="MapLeftContainerTitle">Your Trips</h2>
+              <div className="HeaderTitle">
+                <h2 className="MapLeftContainerTitle">Your Trips</h2>
+              </div>
+              {this.state.distanceArray.length > 1 ?
+                (
+                <div className="HeaderTripDetails" >
+                  <div className="TripsTitle">
+                    <h4 className="DetailTitle">Trips</h4>
+                    <h4 className="DetailDescripton">{this.state.distanceArray.length}</h4>
+                  </div>
+                  <div className="DurationTitle">
+                    <h4 className="DetailTitle">Distance</h4>
+                    <h4 className="DetailDescripton">1000 miles</h4>
+                  </div>
+                  <div className="DurationTitle">
+                    <h4 className="DetailTitle">Duration</h4>
+                    <h4 className="DetailDescripton">1 Day 5Hrs</h4>
+                  </div>
+                </div>
+
+                )
+                : null}
             </div>
             <div className="MapLeftSubContainer">
               <div className="MapLeftCities">
@@ -240,7 +261,7 @@ class TripMap extends Component {
               { this.state.distanceArray.length > 1 ? (
                 <div>
                 <div className="destinationContainer">
-                  
+
                 </div>
                 {
                  this.state.distanceArray.map(function(distance, index){
@@ -272,7 +293,7 @@ class TripMap extends Component {
                 </div>
 
               )
-               : <div>Hello</div>}
+               : null}
               </div>
 
             </div>

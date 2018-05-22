@@ -8,8 +8,8 @@
 }
 .MapLeftContainer {
   height: 100vh;
-  min-width: 30vw;
-  width: auto;
+  width: 40vw;
+  min-width: 600px;
   background-color: #EEEEEE;
   min-width: 350px;
   display: flex;
@@ -19,10 +19,24 @@
 }
 .MapLeftContainerHeader {
   height: auto;
-  padding: 15px;
+  /* padding: 15px; */
   background-color: #00A1FF;
   width: 100%;
-
+}
+.HeaderTripDetails {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: #FFFFFF;
+  justify-content: space-around;
+  border-top: 1px solid lightgrey;
+  border-bottom: 1px solid lightgrey;
+}
+.TripsTitle, .DurationTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* background-color: red; */
 }
 .MapLeftContainerTitle {
   text-align: left;
@@ -40,7 +54,7 @@
 }
 .MapRightContainer {
   height: 100%;
-  width: 70vw;
+  width: 60vw;
   /* min-width: 100%; */
 }
 .tripDetails {
@@ -53,6 +67,16 @@
   -webkit-box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
   -moz-box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
   box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
+}
+.DetailTitle, .DetailDescripton {
+  font-size: 18px;
+  font-family: sans-serif;
+  font-weight: 400;
+  margin: 5px;
+  color: #4B4B4B;
+}
+.DetailDescripton {
+  font-size: 12px;
 }
 .addTripButton {
   width: 40px;
@@ -123,7 +147,7 @@
 .MapLeftCities {
   min-height: 100vh;
   height: auto;
-  min-width: 350px;
+  min-width: auto;
   width: 70%;
   /* background-color: green; */
 }
