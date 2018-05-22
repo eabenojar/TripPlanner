@@ -8,12 +8,14 @@
 }
 .MapLeftContainer {
   height: 100vh;
-  width: 30%;
-  background-color: #FFF;
+  min-width: 30vw;
+  width: auto;
+  background-color: #EEEEEE;
   min-width: 350px;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: hidden;
+  overflow-x: hidden;
 }
 .MapLeftContainerHeader {
   height: auto;
@@ -38,23 +40,29 @@
 }
 .MapRightContainer {
   height: 100%;
-  width: 70%;
+  width: 70vw;
+  /* min-width: 100%; */
 }
 .tripDetails {
-  width: 300px;
+  width: 250px;
   margin: 15px;
   border-radius: 4px;
-  height: auto;
+  height: 189px;
   padding: 10px;
-  background-color: #00A1FF;
+  background-color: #FFFFFF;
+  -webkit-box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
+  -moz-box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
+  box-shadow: 0px 0px 10px 5px rgba(191,191,191,0.6);
 }
 .addTripButton {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  background-color: lightgrey;
+  background-color: #00A1FF;
   font-size: 20px;
   margin: 0 0 0 15px;
+  position: absolute;
+  left: 0;
 
 }
 .newInputTrip {
@@ -75,7 +83,7 @@
 }
 #eraserIcon {
   font-size: 20px;
-  color: #FFF;
+  color: #000000;
   margin-bottom: 10px;
 }
 #eraserButton {
@@ -100,4 +108,62 @@
   display: flex;
   align-items: center;
   width: 70%;
+}
+.destinationContainer {
+  width: 95%;
+  margin: 15px 15px 0 15px;
+  border-radius: 4px;
+  height: 209px;
+  /* padding: 10px; */
+  /* background-color: #00A1FF; */
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+.MapLeftCities {
+  min-height: 100vh;
+  height: auto;
+  min-width: 350px;
+  width: 70%;
+  /* background-color: green; */
+}
+.MapLeftDistances {
+  display: flex;
+  min-width: 200px;
+  width: 30%;
+  min-height: 100vh;
+  flex-direction: column;
+  margin: 0 15px 0 0;
+  /* background-color: red; */
+}
+.MapLeftSubContainer {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow-y: auto;
+}
+.destinationMiles {
+ height: 50px;
+ width: 175px;
+ background-color: #FFFFFF;
+ border-radius: 5px;
+ margin: 5px;
+ display: flex;
+ flex-direction: row;
+ justify-content: center;
+ align-items: center;
+
+}
+.destinationTitle {
+  font-size: 14px;
+  font-weight: 200;
+  font-family: sans-serif;
+  margin: 5px;
+  /* margin-left: 5px; */
+}
+#distanceIcon {
+  font-size: 16px;
+  color: #000000;
+  margin-bottom: 5px;
 }

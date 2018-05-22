@@ -47,7 +47,7 @@ class MainPage extends Component {
 
             const city = {
               city: place.formatted_address,
-              image: place.photos[0].getUrl({'maxWidth': 300, 'maxHeight': 200}),
+              image: place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150}),
               id: place.id,
               location: place.geometry.location
             }

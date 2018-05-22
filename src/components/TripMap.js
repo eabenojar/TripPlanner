@@ -10,40 +10,42 @@ class TripMap extends Component {
       openSearch: false,
       secondDestination: '',
       city: '',
-      tripArray: []
+      tripArray: [],
+      distanceArray: []
     }
     this.onPlaceChanged = this.onPlaceChanged.bind(this);
     this.addTrip = this.addTrip.bind(this);
     this.newInputTrip = this.newInputTrip.bind(this);
     this.handleChange = this.handleChange.bind(this);
-
   }
   componentWillMount(){
-
     const tripArray = [...this.props.location.tripArray]
     this.setState({
       tripArray
     })
   }
   submitForm(e){
-    console.log("PRESS ENTER")
     e.preventDefault();
-
   }
   componentDidMount(){
     console.log('WILL MOUNT', this.state.tripArray);
     if(this.props.location.place.geometry){
         this.onPlaceChanged()
     }
-
+  }
+  componentDidUpdate(){
+    if(this.state.distanceArray.length > 1){
+          console.log("DISTANCE ROW IS RENDER", this.state.distanceArray)
+    }
   }
   onPlaceChanged(place){
-    console.log('staeaelknealeanaf', this.state.tripArray)
+    // console.log('staeaelknealeanaf', this.state.tripArray)
     const {google} = this.props;
     const refMap = this.refMap;
     var waypointsArr = [];
     var originArr = [];
     var destinationArr = [];
+    var finalTripArr = [];
     var latlng = new google.maps.LatLng(42.39, -72.52);
     var countries = {
     'us': {
@@ -51,8 +53,6 @@ class TripMap extends Component {
       zoom: 14
     },
     };
-
-
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer;
     this.setState({
@@ -64,6 +64,7 @@ class TripMap extends Component {
       if(this.state.map){
         this.state.map.panTo(this.state.tripArray[0].location);
       }
+      //CHECK IF MORE THAN TWO TRIPS ARE IN TRIP ARRAY
       if(this.state.tripArray.length > 1) {
 
         //ADD MARKERS FOR DISTANCE ON MAP
@@ -74,12 +75,8 @@ class TripMap extends Component {
             }
 
             waypointsArr.push({...waypointsLocations})
-            console.log("WAY ARRAYdadwadwaw", waypointsArr)
           }
-          var origin1 = {lat: 55.93, lng: -3.118};
-          var origin2 = 'Greenwich, England';
-          var destinationA = 'Stockholm, Sweden';
-          var destinationB = {lat: 50.087, lng: 14.421};
+          //ADD LOCATION(LAT AND LONG) TO THE ORIGIN ARRAY, ADD CITIES FROM TRIP ARRAY TO DESTINATION ARRAY
           originArr.push(waypoints.location);
           destinationArr.push(waypoints.city);
 
@@ -98,45 +95,41 @@ class TripMap extends Component {
               window.alert('Directions request failed due to ' + status);
             }
           });
+
           var service = new google.maps.DistanceMatrixService;
                    service.getDistanceMatrix({
                      origins: originArr,
                      destinations: destinationArr,
                      travelMode: 'DRIVING',
-                     unitSystem: google.maps.UnitSystem.METRIC,
+                     unitSystem: google.maps.UnitSystem.IMPERIAL,
                      avoidHighways: false,
                      avoidTolls: false
                    }, function(response, status) {
                      if (status !== 'OK') {
                        alert('Error was: ' + status);
                      } else {
-                       console.log('RESPONSEEEEEEE', response)
+                       // const finalTripArr = [...this.state.tripArray]
+                       const distanceRows = response.rows;
+                       // console.log("DISTANNCEEEE", distanceRows, response.rows[index])
+                       // const finalTripObj = {...waypoints, ...distanceRows}
+                       // console.log(finalTripObj, 'FINAL TRIP BOOOOMMMM!')
+                       // finalTripArr.push(finalTripObj);
+                       this.setState({
+                         distanceArray: distanceRows
+                       })
                      };
-                   });
-
+                   }.bind(this));
       }
     })
     // this.state.map = new google.maps.Map(refMap, {
     // zoom: countries['us'].zoom,
     // center: countries['us'].center
     // })
-
-
   }
   addTrip(){
-    console.log('ADD TRIP HAS BEEN CLICKED');
     this.setState({
       openSearch: true
     })
-    // this.setState({
-    //   openSearch: true,
-    //   secondDestination: 'Oklahoma City, OK'
-    // }, function(){
-    //   if(this.state.secondDestination){
-    //     this.onPlaceChanged();
-    //   }
-    //
-    // })
   }
   handleChange(e){
     var value = e.target.value;
@@ -149,7 +142,7 @@ class TripMap extends Component {
 
   }
   newInputTrip(value){
-    console.log('THIS STATE NEW INPUT', this.state.tripArray)
+    // console.log('THIS STATE NEW INPUT', this.state.tripArray)
     var input = this.newInput;
     const {google} = this.props;
     var options = {
@@ -164,10 +157,9 @@ class TripMap extends Component {
           // console.log('HANDLE STATE OF AUTO', place)
           if(place){
 
-            console.log("WHAT IS THIS PLACE", place.formatted_address)
             const city = {
               city: place.formatted_address,
-              image: place.photos[0].getUrl({'maxWidth': 300, 'maxHeight': 200}),
+              image: place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150}),
               id: place.id,
               location: place.geometry.location
             }
@@ -179,7 +171,7 @@ class TripMap extends Component {
               newCity: '',
               openSearch: false
             })
-            console.log("THIS NEW PUSH", this.state.tripArray)
+            // console.log("THIS NEW PUSH", this.state.tripArray)
             this.onPlaceChanged(place);
           }
     }.bind(this))
@@ -208,38 +200,83 @@ class TripMap extends Component {
             <div className="MapLeftContainerHeader">
               <h2 className="MapLeftContainerTitle">Your Trips</h2>
             </div>
-            {this.state.tripArray ? (
-              this.state.tripArray.map((trip) => {
-                return (
-                  <div key={trip.id} className="tripDetails" ref={ref => this.tripDetails = ref}>
-                    <div className="tripTopContainer">
-                      <div className="tripTopLeftContainer">
-                          <h2 className="tripDetailsTitle">{trip.city}</h2>
-                      </div>
-                      <div className="tripTopRightContainer">
-                        <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
-                            <i id="eraserIcon" className="fa fa-pencil" ></i>
-                        </button>
-                        <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
-                            <i id="eraserIcon" className="fa fa-trash" ></i>
-                        </button>
+            <div className="MapLeftSubContainer">
+              <div className="MapLeftCities">
+                {this.state.tripArray ? (
+                  this.state.tripArray.map((trip) => {
+                    return (
+                      <div key={trip.id} className="tripDetails" ref={ref => this.tripDetails = ref}>
+                        <div className="tripTopContainer">
+                          <div className="tripTopLeftContainer">
+                              <h2 className="tripDetailsTitle">{trip.city}</h2>
+                          </div>
+                          <div className="tripTopRightContainer">
+                            <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
+                                <i id="eraserIcon" className="fa fa-pencil" ></i>
+                            </button>
+                            <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
+                                <i id="eraserIcon" className="fa fa-trash" ></i>
+                            </button>
 
-                      </div>
-                    </div>
+                          </div>
+                        </div>
 
-                    <img src={trip.image} alt="boohoo" className="img-responsive"/>
+                        <img src={trip.image} alt="boohoo" className="img-responsive"/>
+                      </div>
+                    )
+                  })
+                ): <div>Loading</div>}
+
+                {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
+                  <div className="newInputTrip">
+                  <form onSubmit={this.submitForm.bind(this)}>
+                    <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
+                    </form>
                   </div>
-                )
-              })
-            ): <div>Loading</div>}
 
-            {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
-              <div className="newInputTrip">
-              <form onSubmit={this.submitForm.bind(this)}>
-                <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
-                </form>
+                  }
               </div>
-            }
+              <div className="MapLeftDistances">
+              { this.state.distanceArray.length > 1 ? (
+                <div>
+                <div className="destinationContainer">
+                  
+                </div>
+                {
+                 this.state.distanceArray.map(function(distance, index){
+                    var index = index;
+                    if(index < this.state.distanceArray.length-1){
+                      return (
+                      distance.elements.map((distance, i) => {
+                        if(index === i - 1){
+                          console.log('fojfoeajaofijao', distance)
+                          return (
+                            <div className="destinationContainer">
+                              <div className="destinationMiles">
+                                <i id="distanceIcon" className="fa fa-car" ></i>
+                                <h4 className="destinationTitle">{distance.distance.text}</h4>
+                              </div>
+                              <div className="destinationMiles">
+                                <i id="distanceIcon" className="fa fa-clock-o" ></i>
+                                <h4 className="destinationTitle">{distance.duration.text}</h4>
+                              </div>
+                            </div>
+                          )
+                        }
+                      })
+                    )
+                    }
+
+                  }.bind(this))
+                }
+                </div>
+
+              )
+               : <div>Hello</div>}
+              </div>
+
+            </div>
+
           </div>
           <div className="MapRightContainer">
             <div style={style} ref={ref => this.refMap = ref}>
