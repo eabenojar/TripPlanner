@@ -11,7 +11,9 @@ class TripMap extends Component {
       secondDestination: '',
       city: '',
       tripArray: [],
-      distanceArray: []
+      distanceArray: [],
+      totalDistance: 0,
+      totalTime: 0
     }
     this.onPlaceChanged = this.onPlaceChanged.bind(this);
     this.addTrip = this.addTrip.bind(this);
@@ -110,13 +112,34 @@ class TripMap extends Component {
                      } else {
                        // const finalTripArr = [...this.state.tripArray]
                        const distanceRows = response.rows;
-                       // console.log("DISTANNCEEEE", distanceRows, response.rows[index])
-                       // const finalTripObj = {...waypoints, ...distanceRows}
-                       // console.log(finalTripObj, 'FINAL TRIP BOOOOMMMM!')
-                       // finalTripArr.push(finalTripObj);
+
+                       console.log("DISTANNCEEEE ROWSSS", distanceRows)
+                       var totalDistance = 0;
+                       var totalTime = 0;
+                       var mins = '';
+                       var hours = '';
+                       const totalDist = distanceRows.map((distance, i)=>{
+                         if(i < distanceRows.length-1){
+                           distance.elements.map((trip, index)=>{
+                             if(i === index-1){
+                               totalTime = (trip.duration.value/60) + totalTime;
+                               console.log("PAEOINFALENFAELNF",parseInt(trip.distance.text.split(" ")[0]))
+                               totalDistance = parseInt(trip.distance.text.replace (/,/g, "")) + totalDistance;
+
+                             }
+                           })
+                         }
+                       })
+                       if(totalTime%60 !== 0){
+                         mins = Math.floor((totalTime%60).toString());
+                         hours = Math.floor(totalTime/60).toString();
+                         totalTime = hours + " h " + mins + " min"
+                       }
                        this.setState({
                          distanceArray: distanceRows,
-                         openSearch: false
+                         openSearch: false,
+                         totalDistance,
+                         totalTime
                        })
                      };
                    }.bind(this));
@@ -210,11 +233,11 @@ class TripMap extends Component {
                   </div>
                   <div className="DurationTitle">
                     <h4 className="DetailTitle">Distance</h4>
-                    <h4 className="DetailDescripton">1000 miles</h4>
+                    <h4 className="DetailDescripton">{this.state.totalDistance} miles</h4>
                   </div>
                   <div className="DurationTitle">
                     <h4 className="DetailTitle">Duration</h4>
-                    <h4 className="DetailDescripton">1 Day 5Hrs</h4>
+                    <h4 className="DetailDescripton">{this.state.totalTime}</h4>
                   </div>
                 </div>
 
