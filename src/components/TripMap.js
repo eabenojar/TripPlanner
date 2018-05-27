@@ -13,7 +13,9 @@ class TripMap extends Component {
       tripArray: [],
       distanceArray: [],
       totalDistance: 0,
-      totalTime: 0
+      totalTime: 0,
+      showInput: true,
+      lastDelete: false
     }
     this.onPlaceChanged = this.onPlaceChanged.bind(this);
     this.addTrip = this.addTrip.bind(this);
@@ -21,34 +23,35 @@ class TripMap extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
   componentWillMount(){
-    const tripArray = [...this.props.location.tripArray]
-    this.setState({
-      tripArray
-    })
+    if(this.props.location.tripArray){
+      const tripArray = [...this.props.location.tripArray];
+      this.setState({
+        tripArray
+      })
+    }
   }
   submitForm(e){
     e.preventDefault();
   }
   componentDidMount(){
-    console.log('WILL MOUNT', this.state.tripArray);
-    if(this.props.location.place.geometry){
-        this.onPlaceChanged()
+    if(this.props.location.place){
+        this.onPlaceChanged();
+    } else {
+      this.onPlaceChanged();
     }
   }
   componentDidUpdate(){
     if(this.state.distanceArray.length > 1){
-          console.log("DISTANCE ROW IS RENDER", this.state.distanceArray)
     }
   }
   onPlaceChanged(place){
-    // console.log('staeaelknealeanaf', this.state.tripArray)
     const {google} = this.props;
     const refMap = this.refMap;
     var waypointsArr = [];
     var originArr = [];
     var destinationArr = [];
     var finalTripArr = [];
-    var latlng = new google.maps.LatLng(42.39, -72.52);
+    var latlng = new google.maps.LatLng(37.7749, -122.4194);
     var countries = {
     'us': {
       center: latlng,
@@ -63,12 +66,19 @@ class TripMap extends Component {
       center: countries['us'].center
       })
     }, function(){
-      if(this.state.map){
+      if(this.state.tripArray.length === 0){
+        this.state.map
+      }
+      if(this.state.map && this.state.tripArray.length === 1){
         this.state.map.panTo(this.state.tripArray[0].location);
+        this.setState({
+          openSearch: false
+        })
+        console.log('this  afeaffaeafafefafeafea LENGTH', this.state.tripArray[0])
       }
       //CHECK IF MORE THAN TWO TRIPS ARE IN TRIP ARRAY
-      if(this.state.tripArray.length > 1) {
-
+      if(this.state.tripArray.length > 0) {
+        console.log("INSIDE THE DELTE DESTINATION TRIP LENGTH", this.state.tripArray.length)
         //ADD MARKERS FOR DISTANCE ON MAP
         this.state.tripArray.map(function(waypoints, index){
           if(index > 0 && index < this.state.tripArray.length-1){
@@ -84,9 +94,8 @@ class TripMap extends Component {
 
         }.bind(this))
         directionsDisplay.setMap(this.state.map);
-          // this.state.map.setZoom;
           directionsService.route({
-            origin: this.props.location.place.geometry.location,
+            origin: this.props.location.place ? this.props.location.place.geometry.location : this.state.tripArray[0].location,
             destination: this.state.tripArray[this.state.tripArray.length-1].city,
             waypoints: [...waypointsArr],
             travelMode: 'DRIVING'
@@ -96,7 +105,7 @@ class TripMap extends Component {
             } else {
               window.alert('Directions request failed due to ' + status);
             }
-          });
+          }.bind(this));
 
           var service = new google.maps.DistanceMatrixService;
                    service.getDistanceMatrix({
@@ -110,10 +119,8 @@ class TripMap extends Component {
                      if (status !== 'OK') {
                        alert('Error was: ' + status);
                      } else {
-                       // const finalTripArr = [...this.state.tripArray]
+                       const finalTripArr = [...this.state.tripArray]
                        const distanceRows = response.rows;
-
-                       console.log("DISTANNCEEEE ROWSSS", distanceRows)
                        var totalDistance = 0;
                        var totalTime = 0;
                        var mins = '';
@@ -123,7 +130,7 @@ class TripMap extends Component {
                            distance.elements.map((trip, index)=>{
                              if(i === index-1){
                                totalTime = (trip.duration.value/60) + totalTime;
-                               console.log("PAEOINFALENFAELNF",parseInt(trip.distance.text.split(" ")[0]))
+                               // console.log("PAEOINFALENFAELNF",parseInt(trip.distance.text.split(" ")[0]))
                                totalDistance = parseInt(trip.distance.text.replace (/,/g, "")) + totalDistance;
 
                              }
@@ -145,10 +152,6 @@ class TripMap extends Component {
                    }.bind(this));
       }
     })
-    // this.state.map = new google.maps.Map(refMap, {
-    // zoom: countries['us'].zoom,
-    // center: countries['us'].center
-    // })
   }
   addTrip(){
     this.setState({
@@ -157,12 +160,10 @@ class TripMap extends Component {
   }
   handleChange(e){
     var value = e.target.value;
-    console.log('VALUE', value)
     this.setState({
       newCity: value
     })
     this.newInputTrip(value)
-    e.preventDefault();
 
   }
   newInputTrip(value){
@@ -173,41 +174,63 @@ class TripMap extends Component {
       types: ['(cities)'],
       componentRestrictions: {country: 'us'}
     };
-
+    const tripArray = [...this.state.tripArray];
+    if(tripArray.length < 6){
     this.state.autocomplete = new google.maps.places.Autocomplete(input, options);
     var finalAutoComplete = this.state.autocomplete;
     this.state.autocomplete.addListener("place_changed", function(){
         var place = finalAutoComplete.getPlace();
           // console.log('HANDLE STATE OF AUTO', place)
           if(place){
-
+            var image = "";
+            if(place.photos){
+              image = place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150})
+            }
             const city = {
               city: place.formatted_address,
-              image: place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150}),
+              image: image,
               id: place.id,
               location: place.geometry.location
             }
-            const tripArray = [...this.state.tripArray];
 
-            tripArray.push({...city})
-            this.setState({
-              tripArray,
-              newCity: ''
-            })
-            // console.log("THIS NEW PUSH", this.state.tripArray)
-            this.onPlaceChanged(place);
+
+              // console.log("TRIP ARRRARYYYYYYY LENGTH", tripArray.length);
+              tripArray.push({...city});
+              this.setState({
+                tripArray,
+                newCity: ''
+
+              })
+              this.onPlaceChanged(place);
+
+
           }
     }.bind(this))
+    }
+    else {
+      console.log("LIMIITTTTITITITITITITIT REACCHEEDDD");
+      this.setState({
+        showInput: false
+      })
+    }
 
 
   }
   deleteTrip(trip){
-    console.log('HELFMALFNKKLAFNAEF', trip)
+    console.log('DELETE TRIPPPPPPPPPPPP', trip)
     const tripList = [...this.state.tripArray];
     const deleteTrip = tripList.filter((removeTrip) => removeTrip.id !== trip.id)
     this.setState({
-      tripArray: deleteTrip
-    }, this.onPlaceChanged.bind(this))
+      tripArray: deleteTrip,
+      showInput: true
+
+    }, function(){
+      console.log("INSIDE THE CALLBACK FUNCTION DELETE", this.state.tripArray.length)
+      if(this.state.tripArray.length >= 0){
+        console.log("INSIDE IF STATE OF CALLBACK")
+        this.onPlaceChanged();
+      }
+    }.bind(this))
 
   }
 
@@ -246,20 +269,22 @@ class TripMap extends Component {
             </div>
             <div className="MapLeftSubContainer">
               <div className="MapLeftCities">
-                {this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
-                  <div className="newInputTrip">
-                  <form onSubmit={this.submitForm.bind(this)}>
-                    <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
-                    </form>
-                  </div>
+                {this.state.showInput ?
+                  <div>{this.state.openSearch === false ?   <button type="button" className="addTripButton" onClick={() => this.addTrip()}>+</button> :
+                    <div className="newInputTrip">
+                    <form onSubmit={this.submitForm.bind(this)}>
+                      <input type="text" className="inputNewTrip" value={this.state.value} placeholder="Start your journey" ref={ref => this.newInput = ref} onChange={this.handleChange} />
+                      </form>
+                    </div>
+                    }</div>
+                  : <div className="addTripLimit"><h5 className="addTripLimitTitle">Maximum Trips Allowed Is 5</h5></div>}
 
-                  }
                 {this.state.tripArray ? (
                   <div>
 
                   {this.state.tripArray.map((trip,index) => {
                     return (
-                      <div className="TripRow">
+                      <div className="TripRow" key={trip.id}>
                       <div className="TripCount">
                         <h4 className="TripCountCircle">{index+1}</h4>
                       </div>
@@ -269,16 +294,14 @@ class TripMap extends Component {
                               <h2 className="tripDetailsTitle">{trip.city}</h2>
                           </div>
                           <div className="tripTopRightContainer">
-                            <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
-                                <i id="eraserIcon" className="fa fa-pencil" ></i>
-                            </button>
+
                             <button id="eraserButton" value={trip} onClick={() => this.deleteTrip(trip)}>
                                 <i id="eraserIcon" className="fa fa-trash" ></i>
                             </button>
                           </div>
                         </div>
 
-                        <img src={trip.image} alt="boohoo" className="img-responsive"/>
+                        <img src={trip.image} alt="No Image Available" className="img-responsive"/>
                       </div>
                       </div>
                     )
@@ -303,7 +326,7 @@ class TripMap extends Component {
                       return (
                       distance.elements.map((distance, i) => {
                         if(index === i - 1){
-                          console.log('fojfoeajaofijao', distance)
+                          // console.log('fojfoeajaofijao', distance)
                           return (
                             <div className="destinationContainer">
                               <div className="destinationMiles">

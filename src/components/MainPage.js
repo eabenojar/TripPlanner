@@ -44,10 +44,15 @@ class MainPage extends Component {
           var place = finalAutoComplete.getPlace();
             // console.log('HANDLE STATE OF AUTO', place)
           if(place){
-
+            var image = "";
+            if(place.photos){
+              image = place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150})
+            } else {
+              image = "";
+            }
             const city = {
               city: place.formatted_address,
-              image: place.photos[0].getUrl({'maxWidth': 250, 'maxHeight': 150}),
+              image: image,
               id: place.id,
               location: place.geometry.location
             }
