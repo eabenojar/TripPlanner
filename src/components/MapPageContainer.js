@@ -16,8 +16,8 @@ class MapPageContainer extends Component {
 
 
 
-//export the container WITHIN the GoogleApiWrapper
  export default GoogleApiWrapper({
    apiKey: API_KEY,
    libraries: ['visualization', 'places']
  })(MapPageContainer)
+

@@ -110,3 +110,4 @@ export default GoogleApiWrapper({
   apiKey: API_KEY,
   libraries: ['visualization', 'places']
 })(MainPage)
+
