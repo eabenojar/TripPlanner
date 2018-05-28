@@ -107,7 +107,7 @@ class MainPage extends Component {
 // <Link to="/map"><button>Back Home</button></Link>
 
 export default GoogleApiWrapper({
-  apiKey: API_KEY,
+  apiKey: 'AIzaSyCt-3KyopWMiFD8l3lIl4s3a0kTPVDlq4U',
   libraries: ['visualization', 'places']
 })(MainPage)
 
