@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import '../styles/MainPage.css';
 // import MapPageContainer from './MapPageContainer';
 import {GoogleApiWrapper} from 'google-maps-react';
-var api_key = process.env.API_KEY;
+var API_KEY = process.env.API_KEY;
 
 
 
@@ -107,6 +107,6 @@ class MainPage extends Component {
 // <Link to="/map"><button>Back Home</button></Link>
 
 export default GoogleApiWrapper({
-  apiKey: api_key,
+  apiKey: API_KEY,
   libraries: ['visualization', 'places']
 })(MainPage)
