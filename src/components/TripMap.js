@@ -67,10 +67,13 @@ class TripMap extends Component {
       })
     }, function(){
       if(this.state.tripArray.length === 0){
-        this.state.map
+        this.state.map;
       }
       if(this.state.map && this.state.tripArray.length === 1){
-        this.state.map.panTo(this.state.tripArray[0].location);
+        console.log("CHECK THIS WHEN ONLy ONE LEFt");
+        this.state.map.setZoom(16);
+        this.state.map.panTo(this.state.tripArray[0].location)
+        
         this.setState({
           openSearch: false
         })
@@ -81,6 +84,7 @@ class TripMap extends Component {
         console.log("INSIDE THE DELTE DESTINATION TRIP LENGTH", this.state.tripArray.length)
         //ADD MARKERS FOR DISTANCE ON MAP
         this.state.tripArray.map(function(waypoints, index){
+          console.log("CHECKING WAY POINTS FOR DELTETION", index, waypoints)
           if(index > 0 && index < this.state.tripArray.length-1){
             const waypointsLocations = {
               location: waypoints.city
