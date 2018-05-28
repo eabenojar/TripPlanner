@@ -50,7 +50,6 @@ class TripMap extends Component {
     var waypointsArr = [];
     var originArr = [];
     var destinationArr = [];
-    var finalTripArr = [];
     var latlng = new google.maps.LatLng(37.7749, -122.4194);
     var countries = {
     'us': {
@@ -59,7 +58,7 @@ class TripMap extends Component {
     },
     };
     var directionsService = new google.maps.DirectionsService;
-    var directionsDisplay = new google.maps.DirectionsRenderer;
+    var directionsDisplay = new google.maps.DirectionsRenderer
     this.setState({
       map: new google.maps.Map(refMap, {
       zoom: countries['us'].zoom,
@@ -123,15 +122,16 @@ class TripMap extends Component {
                      if (status !== 'OK') {
                        alert('Error was: ' + status);
                      } else {
-                       const finalTripArr = [...this.state.tripArray]
+                      //  const finalTripArr = [...this.state.tripArray]
                        const distanceRows = response.rows;
+                       console.log("DISTANCEEEEEE", distanceRows)
                        var totalDistance = 0;
                        var totalTime = 0;
                        var mins = '';
                        var hours = '';
-                       const totalDist = distanceRows.map((distance, i)=>{
+                       distanceRows.map((distance, i)=>{
                          if(i < distanceRows.length-1){
-                           distance.elements.map((trip, index)=>{
+                            return (distance.elements.map((trip, index)=>{
                              if(i === index-1){
                                totalTime = (trip.duration.value/60) + totalTime;
                                // console.log("PAEOINFALENFAELNF",parseInt(trip.distance.text.split(" ")[0]))
@@ -139,7 +139,7 @@ class TripMap extends Component {
 
                              }
                            })
-                         }
+                            )}
                        })
                        if(totalTime%60 !== 0){
                          mins = Math.floor((totalTime%60).toString());
@@ -152,6 +152,7 @@ class TripMap extends Component {
                          totalDistance,
                          totalTime
                        })
+                       console.log("THIS STATE DISTANCE", this.state.distanceArray)
                      };
                    }.bind(this));
       }
@@ -180,9 +181,11 @@ class TripMap extends Component {
     };
     const tripArray = [...this.state.tripArray];
     if(tripArray.length < 6){
-    this.state.autocomplete = new google.maps.places.Autocomplete(input, options);
-    var finalAutoComplete = this.state.autocomplete;
-    this.state.autocomplete.addListener("place_changed", function(){
+      this.setState({
+        autocomplete: new google.maps.places.Autocomplete(input, options)
+      }, function(){
+      var finalAutoComplete = this.state.autocomplete;
+      this.state.autocomplete.addListener("place_changed", function(){
         var place = finalAutoComplete.getPlace();
           // console.log('HANDLE STATE OF AUTO', place)
           if(place){
@@ -210,6 +213,8 @@ class TripMap extends Component {
 
           }
     }.bind(this))
+      })
+    
     }
     else {
       console.log("LIMIITTTTITITITITITITIT REACCHEEDDD");
@@ -325,10 +330,8 @@ class TripMap extends Component {
                 </div>
                 {
                  this.state.distanceArray.map(function(distance, index){
-                    var index = index;
                     if(index < this.state.distanceArray.length-1){
-                      return (
-                      distance.elements.map((distance, i) => {
+                       return ( distance.elements.map((distance, i) => {
                         if(index === i - 1){
                           // console.log('fojfoeajaofijao', distance)
                           return (
