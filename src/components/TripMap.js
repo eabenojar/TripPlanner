@@ -363,7 +363,7 @@ class TripMap extends Component {
                   {this.state.distanceArray.map(
                     function(distance, index) {
                       if (index < this.state.distanceArray.length - 1) {
-                        return distance.elements.map((distance, i) => {
+                        return distance.elements.forEach((distance, i) => {
                           if (index === i - 1) {
                             return (
                               <div className="destinationContainer">
