@@ -3,7 +3,6 @@ import './App.css';
 import MainPage from './components/MainPage';
 import MapPageContainer from './components/MapPageContainer';
 import { BrowserRouter as Router, Route} from "react-router-dom";
-require('dotenv').config();
 
 
 class App extends Component {
