@@ -309,7 +309,7 @@ class TripMap extends Component {
               ) : (
                 <div className="addTripLimit">
                   <h5 className="addTripLimitTitle">
-                    Maximum Trips Allowed Is 5
+                    Maximum Trips Allowed Is 6
                   </h5>
                 </div>
               )}
